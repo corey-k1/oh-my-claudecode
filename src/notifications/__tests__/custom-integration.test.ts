@@ -111,6 +111,19 @@ describe("Custom Integration Validation", () => {
       expect(result.valid).toBe(true);
     });
 
+    it("allows HTTP for 127.0.0.1 loopback", () => {
+      const integration: CustomIntegration = {
+        id: "loopback-webhook",
+        type: "webhook",
+        enabled: true,
+        config: { url: "http://127.0.0.1:8787/hook", method: "POST", headers: {}, bodyTemplate: "", timeout: 10000 },
+        events: ["session-end"],
+      };
+
+      const result = validateCustomIntegration(integration);
+      expect(result.valid).toBe(true);
+    });
+
     it("rejects CLI command with spaces", () => {
       const integration: CustomIntegration = {
         id: "bad-cli",
