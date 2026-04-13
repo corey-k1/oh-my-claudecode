@@ -41,39 +41,19 @@ describe('Ralph PRD-Mandatory', () => {
   });
 
   // ==========================================================================
-  // Flag Detection & Stripping
+  // Prompt Flag Sanitization
   // ==========================================================================
 
   describe('detectNoPrdFlag', () => {
-    it('should detect --no-prd in prompt', () => {
+    it('still detects legacy --no-prd syntax for sanitization', () => {
       expect(detectNoPrdFlag('ralph --no-prd fix this')).toBe(true);
-    });
-
-    it('should detect --no-prd at start of prompt', () => {
       expect(detectNoPrdFlag('--no-prd fix this bug')).toBe(true);
+      expect(detectNoPrdFlag('fix this bug --NO-PRD')).toBe(true);
     });
 
-    it('should detect --no-prd at end of prompt', () => {
-      expect(detectNoPrdFlag('fix this bug --no-prd')).toBe(true);
-    });
-
-    it('should detect --NO-PRD (case insensitive)', () => {
-      expect(detectNoPrdFlag('ralph --NO-PRD fix this')).toBe(true);
-    });
-
-    it('should detect --No-Prd (mixed case)', () => {
-      expect(detectNoPrdFlag('ralph --No-Prd fix this')).toBe(true);
-    });
-
-    it('should return false when flag is absent', () => {
+    it('returns false when the legacy flag is absent', () => {
       expect(detectNoPrdFlag('ralph fix this bug')).toBe(false);
-    });
-
-    it('should return false for empty string', () => {
       expect(detectNoPrdFlag('')).toBe(false);
-    });
-
-    it('should return false for --prd (without no)', () => {
       expect(detectNoPrdFlag('ralph --prd build a todo app')).toBe(false);
     });
   });
@@ -267,6 +247,19 @@ describe('Ralph PRD-Mandatory', () => {
       const state = readRalphState(testDir);
       expect(state).not.toBeNull();
       expect(state!.prd_mode).toBe(true);
+      expect(findPrdPath(testDir)).not.toBeNull();
+    });
+
+    it('should ignore legacy --no-prd and still require PRD startup', () => {
+      const hook = createRalphLoopHook(testDir);
+      const started = hook.startLoop(undefined, 'test prompt --no-prd');
+
+      expect(started).toBe(true);
+
+      const state = readRalphState(testDir);
+      expect(state).not.toBeNull();
+      expect(state!.prd_mode).toBe(true);
+      expect(state!.prompt).toBe('test prompt');
       expect(findPrdPath(testDir)).not.toBeNull();
     });
 

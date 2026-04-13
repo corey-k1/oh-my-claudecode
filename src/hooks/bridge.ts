@@ -915,19 +915,12 @@ async function processKeywordDetector(input: HookInput): Promise<HookOutput> {
         // Lazy-load ralph module
         const {
           createRalphLoopHook,
-          detectNoPrdFlag: detectNoPrd,
-          stripNoPrdFlag: stripNoPrd,
           detectCriticModeFlag,
           stripCriticModeFlag,
         } = await import("./ralph/index.js");
 
-        // Handle --no-prd flag
-        const noPrd = detectNoPrd(promptText);
         const criticMode = detectCriticModeFlag(promptText) ?? undefined;
-        const promptWithoutCriticFlag = stripCriticModeFlag(promptText);
-        const cleanPrompt = noPrd
-          ? stripNoPrd(promptWithoutCriticFlag)
-          : promptWithoutCriticFlag;
+        const cleanPrompt = stripCriticModeFlag(promptText);
 
         // Activate ralph state which also auto-activates ultrawork
         const hook = createRalphLoopHook(directory);
@@ -935,7 +928,6 @@ async function processKeywordDetector(input: HookInput): Promise<HookOutput> {
           sessionId,
           cleanPrompt,
           {
-            disablePrd: noPrd,
             ...(criticMode ? { criticMode } : {}),
           },
         );
@@ -1938,8 +1930,6 @@ async function processPostToolUse(input: HookInput): Promise<HookOutput> {
     if (skillName === "ralph") {
       const {
         createRalphLoopHook,
-        detectNoPrdFlag: detectNoPrd,
-        stripNoPrdFlag: stripNoPrd,
         detectCriticModeFlag,
         stripCriticModeFlag,
       } = await import("./ralph/index.js");
@@ -1948,20 +1938,14 @@ async function processPostToolUse(input: HookInput): Promise<HookOutput> {
           ? input.prompt
           : "Ralph loop activated via Skill tool";
 
-      // Handle --no-prd flag
-      const noPrd = detectNoPrd(rawPrompt);
       const criticMode = detectCriticModeFlag(rawPrompt) ?? undefined;
-      const promptWithoutCriticFlag = stripCriticModeFlag(rawPrompt);
-      const cleanPrompt = noPrd
-        ? stripNoPrd(promptWithoutCriticFlag)
-        : promptWithoutCriticFlag;
+      const cleanPrompt = stripCriticModeFlag(rawPrompt);
 
       const hook = createRalphLoopHook(directory);
       hook.startLoop(
         input.sessionId,
         cleanPrompt,
         {
-          disablePrd: noPrd,
           ...(criticMode ? { criticMode } : {}),
         },
       );
