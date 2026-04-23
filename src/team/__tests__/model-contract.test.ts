@@ -172,6 +172,7 @@ describe('model-contract', () => {
     });
     it('codex includes --dangerously-bypass-approvals-and-sandbox', () => {
       const args = buildLaunchArgs('codex', { teamName: 't', workerName: 'w', cwd: '/tmp' });
+      expect(args[0]).toBe('exec');
       expect(args).not.toContain('--full-auto');
       expect(args).toContain('--dangerously-bypass-approvals-and-sandbox');
     });
@@ -179,7 +180,7 @@ describe('model-contract', () => {
       const args = buildLaunchArgs('gemini', { teamName: 't', workerName: 'w', cwd: '/tmp' });
       expect(args).toContain('--approval-mode');
       expect(args).toContain('yolo');
-      expect(args).not.toContain('-i');
+      expect(args).not.toContain('-p');
     });
     it('passes model flag when specified', () => {
       const args = buildLaunchArgs('codex', { teamName: 't', workerName: 'w', cwd: '/tmp', model: 'gpt-4' });
@@ -274,6 +275,7 @@ describe('model-contract', () => {
 
       expect(buildWorkerArgv('codex', { teamName: 'my-team', workerName: 'worker-1', cwd: '/tmp' })).toEqual([
         'codex',
+        'exec',
         '--dangerously-bypass-approvals-and-sandbox',
       ]);
       expect(mockSpawnSync).toHaveBeenCalledWith('which', ['codex'], { timeout: 5000, encoding: 'utf8' });
@@ -367,7 +369,7 @@ describe('model-contract', () => {
       expect(isPromptModeAgent('gemini')).toBe(true);
       const c = getContract('gemini');
       expect(c.supportsPromptMode).toBe(true);
-      expect(c.promptModeFlag).toBe('-i');
+      expect(c.promptModeFlag).toBe('-p');
     });
 
     it('claude does not support prompt mode', () => {
@@ -383,7 +385,7 @@ describe('model-contract', () => {
 
     it('getPromptModeArgs returns flag + instruction for gemini', () => {
       const args = getPromptModeArgs('gemini', 'Read inbox');
-      expect(args).toEqual(['-i', 'Read inbox']);
+      expect(args).toEqual(['-p', 'Read inbox']);
     });
 
     it('getPromptModeArgs returns instruction only (positional) for codex', () => {
