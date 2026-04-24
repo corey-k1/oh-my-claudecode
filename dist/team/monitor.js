@@ -267,7 +267,19 @@ export async function getTeamSummary(teamName, cwd) {
         if (alive && status.state === 'working' && (hb?.turn_count ?? 0) > 5) {
             nonReportingWorkers.push(worker.name);
         }
-        workerSummaries.push({ name: worker.name, alive, lastTurnAt, turnsWithoutProgress });
+        workerSummaries.push({
+            name: worker.name,
+            alive,
+            lastTurnAt,
+            turnsWithoutProgress,
+            working_dir: worker.working_dir,
+            worktree_repo_root: worker.worktree_repo_root,
+            worktree_path: worker.worktree_path,
+            worktree_branch: worker.worktree_branch,
+            worktree_detached: worker.worktree_detached,
+            worktree_created: worker.worktree_created,
+            team_state_root: worker.team_state_root,
+        });
     }
     const perf = {
         total_ms: Number((performance.now() - summaryStartMs).toFixed(2)),
@@ -279,6 +291,9 @@ export async function getTeamSummary(teamName, cwd) {
     return {
         teamName: config.name,
         workerCount: config.worker_count,
+        team_state_root: config.team_state_root,
+        workspace_mode: config.workspace_mode,
+        worktree_mode: config.worktree_mode,
         tasks: counts,
         workers: workerSummaries,
         nonReportingWorkers,
