@@ -241,7 +241,6 @@ export interface TeamManifestV2 {
   team_state_root?: string;
   workspace_mode?: 'single' | 'worktree';
   worktree_mode?: 'disabled' | 'detached' | 'branch';
-  worktree_mode?: 'disabled' | 'detached' | 'branch';
   lifecycle_profile?: 'default' | 'linked_ralph';
   leader_pane_id: string | null;
   hud_pane_id: string | null;
@@ -259,7 +258,6 @@ export interface WorkerInfo {
   assigned_tasks: string[];
   pid?: number;
   pane_id?: string;
-  working_dir?: string;
   working_dir?: string;
   worktree_repo_root?: string;
   worktree_path?: string;
@@ -293,7 +291,7 @@ export interface TeamConfig {
   leader_cwd?: string;
   team_state_root?: string;
   workspace_mode?: 'single' | 'worktree';
-  worktree_mode?: 'disabled' | 'named' | 'detached';
+  worktree_mode?: 'disabled' | 'detached' | 'branch';
   lifecycle_profile?: 'default' | 'linked_ralph';
   leader_pane_id: string | null;
   hud_pane_id: string | null;
