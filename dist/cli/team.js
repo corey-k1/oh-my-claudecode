@@ -354,13 +354,22 @@ export async function teamStatusByTeamName(teamName, cwd = process.cwd()) {
             running: true,
             sessionName: config?.tmux_session,
             leaderPaneId: config?.leader_pane_id,
-            workerPaneIds: Array.from(new Set((config?.workers ?? [])
-                .map((worker) => worker.pane_id)
-                .filter((paneId) => typeof paneId === 'string' && paneId.trim().length > 0))),
             workspaceMode: config?.workspace_mode,
             worktreeMode: config?.worktree_mode,
             teamStateRoot: config?.team_state_root,
-            workers: config?.workers ?? [],
+            workerPaneIds: Array.from(new Set((config?.workers ?? [])
+                .map((worker) => worker.pane_id)
+                .filter((paneId) => typeof paneId === 'string' && paneId.trim().length > 0))),
+            workers: (config?.workers ?? []).map((worker) => ({
+                name: worker.name,
+                working_dir: worker.working_dir,
+                worktree_repo_root: worker.worktree_repo_root,
+                worktree_path: worker.worktree_path,
+                worktree_branch: worker.worktree_branch,
+                worktree_detached: worker.worktree_detached,
+                worktree_created: worker.worktree_created,
+                team_state_root: worker.team_state_root,
+            })),
             snapshot,
         };
     }
@@ -502,6 +511,10 @@ Usage:
   omc team shutdown <team_name> [--force] [--json] [--cwd DIR]
   omc team api <operation> [--input '<json>'] [--json] [--cwd DIR]
   omc team [ralph] <N:agent-type[:role]> "task" [--json] [--cwd DIR] [--new-window]
+
+Worktrees:
+  Native per-worker git worktrees are opt-in/config-gated with team.ops.worktreeMode or OMC_TEAM_WORKTREE_MODE=detached|branch.
+  Status JSON includes workspaceMode, worktreeMode, teamStateRoot, and per-worker worktree metadata.
 
 Examples:
   omc team start --agent codex --count 2 --task "review auth flow" --new-window
