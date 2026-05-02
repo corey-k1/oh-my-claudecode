@@ -206,6 +206,13 @@ export type {
 } from './dag-schema.js';
 
 export {
+  appendTeamDeliveryLog,
+  appendTeamDeliveryLogForCwd,
+  teamDeliveryLogPath,
+} from './delivery-log.js';
+export type { TeamDeliveryEventName, TeamDeliveryLogEvent, TeamDeliveryResult } from './delivery-log.js';
+
+export {
   checkSentinelReadiness,
   waitForSentinelReadiness,
 } from './sentinel-gate.js';
