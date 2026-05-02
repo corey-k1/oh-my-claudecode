@@ -30,6 +30,7 @@ export { parseTeamDagHandoff, readTeamDagHandoffForLatestPlan, } from './dag-sch
 export { appendTeamDeliveryLog, appendTeamDeliveryLogForCwd, teamDeliveryLogPath, } from './delivery-log.js';
 export { buildRebalanceDecisions } from './rebalance-policy.js';
 export { synthesizeDelegationPlan } from './delegation-policy.js';
+export { assertCurrentTaskBranchAvailable, findActiveCurrentTaskByBranch, listActiveCurrentTasks, readCurrentTaskBaseline, upsertCurrentTaskBaseline, } from './current-task-baseline.js';
 export { checkSentinelReadiness, waitForSentinelReadiness, } from './sentinel-gate.js';
 export { getContract, isCliAvailable as isCliAvailableForAgent, validateCliAvailable as validateCliAvailableForAgent, buildLaunchArgs, buildWorkerCommand, parseCliOutput, 
 // Deprecated backward-compat exports kept for downstream consumers.

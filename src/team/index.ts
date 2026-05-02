@@ -218,6 +218,15 @@ export type { RebalanceDecision, RebalancePolicyInput, RebalanceWorkerInput } fr
 export { synthesizeDelegationPlan } from './delegation-policy.js';
 
 export {
+  assertCurrentTaskBranchAvailable,
+  findActiveCurrentTaskByBranch,
+  listActiveCurrentTasks,
+  readCurrentTaskBaseline,
+  upsertCurrentTaskBaseline,
+} from './current-task-baseline.js';
+export type { CurrentTaskBaselineEntry, CurrentTaskStatus, UpsertCurrentTaskBaselineInput } from './current-task-baseline.js';
+
+export {
   checkSentinelReadiness,
   waitForSentinelReadiness,
 } from './sentinel-gate.js';
