@@ -159,18 +159,6 @@ function parseOptionalEventType(value: unknown): TeamEventType | null {
   return normalized as TeamEventType;
 }
 
-function eventSequenceValue(eventId: string): bigint | null {
-  if (/^\d+$/.test(eventId)) return BigInt(eventId);
-  return null;
-}
-
-function isEventAfterCursor(event: { event_id: string }, cursor: string): boolean {
-  if (!cursor) return true;
-  const left = eventSequenceValue(event.event_id);
-  const right = eventSequenceValue(cursor);
-  if (left !== null && right !== null) return left > right;
-  return event.event_id !== cursor;
-}
 
 const WAKEABLE_TEAM_EVENT_TYPES = new Set<TeamEventType>([
   'task_completed',
@@ -190,8 +178,16 @@ function filterTeamEvents(
   opts: { afterEventId?: string; wakeableOnly?: boolean | null; type?: TeamEventType | null; worker?: string; taskId?: string },
 ): Awaited<ReturnType<typeof readTeamEvents>> {
   const afterEventId = opts.afterEventId?.trim() ?? '';
-  return events.filter((event) => {
-    if (!isEventAfterCursor(event, afterEventId)) return false;
+  const cursorIndex = afterEventId ? events.findIndex((event) => event.event_id === afterEventId) : -1;
+  const cursorSequence = /^\d+$/.test(afterEventId) ? BigInt(afterEventId) : null;
+  const candidates = cursorIndex >= 0
+    ? events.slice(cursorIndex + 1)
+    : events.filter((event) => {
+      if (!afterEventId) return true;
+      if (cursorSequence === null || !/^\d+$/.test(event.event_id)) return true;
+      return BigInt(event.event_id) > cursorSequence;
+    });
+  return candidates.filter((event) => {
     if (opts.wakeableOnly === true && !WAKEABLE_TEAM_EVENT_TYPES.has(event.type as TeamEventType)) return false;
     if (opts.type && event.type !== opts.type) return false;
     if (opts.worker && event.worker !== opts.worker) return false;
@@ -1154,6 +1150,7 @@ export async function executeTeamApiOperation(
           teamReadMonitorSnapshot(teamName, cwd),
           readTeamEvents(teamName, cwd),
         ]);
+        if (!summary) return { ok: false, operation, error: { code: 'team_not_found', message: 'team_not_found' } };
         const recentEvents = events.slice(Math.max(0, events.length - 50));
         return { ok: true, operation, data: buildIdleState(teamName, summary, snapshot, recentEvents) };
       }
@@ -1166,6 +1163,7 @@ export async function executeTeamApiOperation(
           readTeamEvents(teamName, cwd),
           listDispatchRequests(teamName, cwd, { status: 'pending', to_worker: 'leader-fixed' }),
         ]);
+        if (!summary) return { ok: false, operation, error: { code: 'team_not_found', message: 'team_not_found' } };
         const recentEvents = events.slice(Math.max(0, events.length - 50));
         return { ok: true, operation, data: buildStallState(teamName, summary, snapshot, recentEvents, pendingLeaderDispatch.length) };
       }
