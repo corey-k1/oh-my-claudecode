@@ -365,7 +365,9 @@ omc team api claim-task --input '{"team_name":"auth-review","task_id":"1","worke
 
 Supported entrypoints: direct start (`omc team [N:agent] "<task>"`), `status`, `shutdown`, and `api`.
 
-Native team worker worktrees are an opt-in/config-gated runtime-v2 rollout. See [Native Team Worktree Mode](TEAM-WORKTREE-MODE.md) for the worktree path contract, canonical `OMC_TEAM_STATE_ROOT` behavior, status fields, and dirty-worktree cleanup policy.
+**Backport contract:** OMC may adapt OMX team runtime behavior, but the public OMC contract remains `omc team`, `omc team api ... --json`, `OMC_TEAM_STATE_ROOT`, and `.omc/state/team/<team-name>`. Treat `.omx` paths and `OMX_*` variables as compatibility aliases at explicit interop boundaries, not as native OMC storage or command branding.
+
+Native team worker worktrees are an opt-in/config-gated runtime-v2 rollout. See [Native Team Worktree Mode](TEAM-WORKTREE-MODE.md) for the worktree path contract, canonical `OMC_TEAM_STATE_ROOT` behavior, status fields, dirty-worktree cleanup policy, and backport parity matrix.
 
 Topology behavior:
 - inside classic tmux (`$TMUX` set): reuse the current tmux surface for split-pane or `--new-window` layouts
@@ -547,7 +549,7 @@ Includes **34 canonical skills + 2 deprecated aliases** (`learner`, `psm`). Runt
 | `omc-plan`                | Planning workflow (`/plan` safe alias)                           | `/oh-my-claudecode:omc-plan`                |
 | `omc-reference`           | Detailed OMC agent/tools/team/commit reference skill             | Auto-loaded reference only                  |
 | `omc-setup`               | One-time setup wizard                                            | `/oh-my-claudecode:omc-setup`               |
-| `omc-teams`               | Spawn `claude`/`codex`/`gemini` tmux workers for parallel execution | `/oh-my-claudecode:omc-teams`             |
+| `omc-teams`               | Legacy compatibility wrapper for `omc team` tmux CLI workers | `/oh-my-claudecode:omc-teams`             |
 | `project-session-manager` | Manage isolated dev environments (git worktrees + tmux)          | `/oh-my-claudecode:project-session-manager` |
 | `psm` | **Deprecated** compatibility alias for `project-session-manager` | `/oh-my-claudecode:psm` |
 | `ralph`                   | Persistence loop until verified completion                       | `/oh-my-claudecode:ralph`                   |
@@ -585,7 +587,7 @@ Each installed skill is exposed as `/oh-my-claudecode:<skill-name>`. The skills 
 | `/oh-my-claudecode:omc-doctor`                  | Diagnose and fix installation issues                                                       |
 | `/oh-my-claudecode:omc-plan <description>`      | Start planning session (supports consensus structured deliberation)                        |
 | `/oh-my-claudecode:omc-setup`                   | One-time setup wizard                                                                      |
-| `/oh-my-claudecode:omc-teams <N>:<agent> <task>`       | Spawn `claude`/`codex`/`gemini` tmux workers for legacy parallel execution                |
+| `/oh-my-claudecode:omc-teams <N>:<agent> <task>`       | Legacy compatibility wrapper for `omc team` tmux CLI workers                              |
 | `/oh-my-claudecode:project-session-manager <arguments>` | Manage isolated dev environments with git worktrees + tmux                         |
 | `/oh-my-claudecode:psm <arguments>`             | Deprecated alias for project session manager                                               |
 | `/oh-my-claudecode:ralph <task>`                | Self-referential loop until task completion (`--critic=architect|critic|codex`)           |
